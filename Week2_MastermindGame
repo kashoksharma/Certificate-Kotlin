@@ -1,0 +1,38 @@
+package mastermind
+
+data class Evaluation(val rightPosition: Int, val wrongPosition: Int)
+
+fun evaluateGuess(secret: String, guess: String): Evaluation {
+    // Check for the temp modified string
+    var tempSecret = secret
+    var tempGuess = guess
+    // position count for right and wrong position.
+    var rightPos = 0
+    var wrongPos = 0
+
+    // Check for the correct matching position.
+    for (i in secret.indices){
+        if (secret[i] == guess[i]){
+            rightPos++
+            tempSecret = tempSecret.replaceRange(i,i + 1, "_")
+            tempGuess = tempGuess.replaceRange(i,i + 1, "_")
+        }
+    }
+
+    // Check for the wrong but matched position.
+    for (i in secret.indices){
+        if (tempGuess[i] != '_'){
+            if (tempSecret.contains(tempGuess[i])){
+                var j = 0
+                while (tempSecret[j] != tempGuess[i]){
+                    j++
+                }
+                tempSecret = tempSecret.replaceRange(j,j + 1, "_")
+                wrongPos++
+            }
+        }
+
+    }
+
+    return Evaluation(rightPos, wrongPos)
+}

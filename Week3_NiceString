@@ -1,0 +1,35 @@
+/* Approach: Solve with general code and then optimized with collections functionality. */
+fun String.isNice(): Boolean {
+    // check for the bad substring and vowels
+    /*val omitSubString = !contains("ba") && !contains("be")
+            && !contains("bu")*/
+    // Better code. using set and none. It should not contain any of the set.
+    val omitSubString = setOf("ba", "be", "bu").none {this.contains(it)}
+    /* val isVowelsPresent = count{
+        it == 'a' || it == 'e' || it == 'i' || it == 'o' || it == 'u' } >=3*/
+    val isVowelsPresent = count { it in "aeiou" } >= 3
+    //check for the double char
+    /*var isDoubleCharPresent = false
+    if (length > 1) {
+        // check for the previous char with the current char
+        var prevCh: Char? = null
+        for (ch in this){
+            if (ch == prevCh)
+                isDoubleCharPresent = true
+            prevCh = ch
+        }
+    }*/
+    // Optimized code with ZipWithNext collection.
+    val isDoubleCharPresent = zipWithNext().any{it.first == it.second}
+
+    // Check for the 2 conditions satisfied.
+    var countConditions = 0
+    if (omitSubString) countConditions++
+    if (isVowelsPresent) countConditions++
+    if (isDoubleCharPresent) countConditions++
+
+    // return the status
+    if (countConditions >= 2) return true
+    return false
+
+}

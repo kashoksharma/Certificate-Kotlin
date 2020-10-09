@@ -45,5 +45,29 @@ fun main(args: Array<String>) {
     // maxBy got the age=29 entry, having 2 entries
     println(age)    // 29
     
+    // Associativity
+    val mapByName: Map<String, Hero> = heroes.associateBy { it.name }
+    mapByName["Frenchy"]?.age		// 42
+
+    // Complex code. try to simplify and prevent usage of "it" with multiple instances. Use explicit parameters.
+    val (first, second) = heroes.flatMap { heroes.map { hero -> it to hero } }.maxBy { it.first.age - it.second.age }!!
+    first.name       // The Captain
+    //Understand the question:
+    Simplify the command
+    1.	val (first, second) = heroes.flatMap { heroes.map { hero -> it to hero } }.maxBy { it.first.age - it.second.age }!!
+    2.	Simplify the “it” with explicit parameters as
+        val (first, second) = heroes.flatMap { first -> heroes.map { hero -> first to hero } }.maxBy { it.first.age - it.second.age }!!
+    3.	Simplify the “hero” as second 
+	val (first, second) = heroes.flatMap { first -> heroes.map { second -> first to second } }.maxBy { it.first.age - it.second.age }!!
+    4.	Simplify the code into multiple statements.
+	Val allPossiblePairs = heroes.flatMap { first -> heroes.map { second -> first to second }}
+	Val (first, second) = allPossiblePairs.maxBy{it.first.age – it.second.age}
+    5.	Finally, it is asking for the oldest (first) and youngest person (Second) with max difference.
+	
+    // This code can be simply written as:
+	Val oldest = heroes.maxBy{it.age}
+	Oldest.name 		// The Captain
+
+
     
 }

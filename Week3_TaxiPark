@@ -1,0 +1,61 @@
+/*
+ * Task #1. Find all the drivers who performed no trips.
+ */
+fun TaxiPark.findFakeDrivers(): Set<Driver> =
+        //Check for the driver list with 0 trip by using the filter on allDriver
+        allDrivers.filter { d -> trips.none{it.driver == d} }.toSet()
+
+/*
+ * Task #2. Find all the clients who completed at least the given number of trips.
+ */
+fun TaxiPark.findFaithfulPassengers(minTrips: Int): Set<Passenger> =
+        // Filter the Passenger list with min trips condition from Trips
+        allPassengers.filter { psg -> trips.count{trip -> psg in trip.passengers} >= minTrips }.toSet()
+
+/*
+ * Task #3. Find all the passengers, who were taken by a given driver more than once.
+ */
+fun TaxiPark.findFrequentPassengers(driver: Driver): Set<Passenger> =
+        // Filter the passengers, who were taken for ride by driver
+        allPassengers.filter{psg -> trips.count{trip -> psg in trip.passengers && driver == trip.driver} > 1}.toSet()
+
+/*
+ * Task #4. Find the passengers who had a discount for majority of their trips.
+ */
+fun TaxiPark.findSmartPassengers(): Set<Passenger> =
+        // Filter the Passenger list. If trip with discount > non-discount. it is smart
+        allPassengers.filter { psg ->
+            val discountTrip = trips.count{trip -> psg in trip.passengers && trip.discount != null}
+            val nonDiscountTrip = trips.count{trip -> psg in trip.passengers && trip.discount == null}
+            discountTrip > nonDiscountTrip}.toSet()
+
+/*
+ * Task #5. Find the most frequent trip duration among minute periods 0..9, 10..19, 20..29, and so on.
+ * Return any period if many are the most frequent, return `null` if there're no trips.
+ */
+fun TaxiPark.findTheMostFrequentTripDurationPeriod(): IntRange? {
+    return trips.groupBy { (it.duration / 10 * 10)..(9 + it.duration / 10 * 10)
+        }.maxBy { (_, group) -> group.size }?.key
+    // Prepare a group with the duration of interval 0..9, 10..19. Get the maximum value group
+}
+
+/*
+ * Task #6.
+ * Check whether 20% of the drivers contribute 80% of the income.
+ */
+fun TaxiPark.checkParetoPrinciple(): Boolean {
+    // Need to following informations. Total income. Income earned by 20% and rest drivers.
+    // Failed test case for null Trip list
+    if (trips.isEmpty()) return false
+    // Total income calculated from Cost function in trip class.
+    val totalIncome = trips.sumByDouble(Trip::cost)
+    // Calculate income by 20% driver.
+    // Approach: create a driver group based on cost. Sort it based on highest cost.
+    val driversIncome = trips.groupBy (Trip::driver)
+        .map{(_, trip) -> trip.sumByDouble ( Trip::cost ) }.sortedDescending()
+    //Get the income earned by top 20% driver.
+    val top20DriverIncome = driversIncome.take ((0.2 * allDrivers.size).toInt()).sum()
+    // Check if 20% driver income is > 80% driver income
+    return top20DriverIncome >= 0.8 * totalIncome
+
+}
